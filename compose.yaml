@@ -1,0 +1,7 @@
+services:
+  embex:
+    build:
+      context: .
+      dockerfile: dockerfile
+    image: ghcr.io/excoffierleonard/embex
+    container_name: embex
