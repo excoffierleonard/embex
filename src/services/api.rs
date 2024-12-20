@@ -1,9 +1,10 @@
 use crate::{
-    config::{API_URL, DEFAULT_PROMPT, MODEL_NAME},
+    config,
     error::AppError,
     types::{ApiErrorResponse, ApiRequest, ApiResponse},
 };
 use reqwest::Client;
+use std::io::{Error, ErrorKind};
 
 #[derive(Default)]
 pub struct VisionApiClient {
@@ -16,14 +17,24 @@ impl VisionApiClient {
     }
 
     pub async fn analyze_image(&self, image_base64: String) -> Result<String, AppError> {
+        let config = config::Config::build().map_err(|e| {
+            eprintln!("Configuration error: {}", e);
+            Error::new(ErrorKind::Other, e)
+        })?;
+
         let request = ApiRequest {
-            model: MODEL_NAME.to_string(),
-            prompt: DEFAULT_PROMPT.to_string(),
+            model: config.model_name,
+            prompt: config.prompt,
             stream: false,
             images: vec![image_base64],
         };
 
-        let response = self.client.post(API_URL).json(&request).send().await?;
+        let response = self
+            .client
+            .post(config.api_url)
+            .json(&request)
+            .send()
+            .await?;
 
         if response.status().is_success() {
             let success: ApiResponse = response.json().await?;
