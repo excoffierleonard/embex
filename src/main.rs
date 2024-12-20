@@ -1,6 +1,9 @@
 #[tokio::main]
 async fn main() -> Result<(), reqwest::Error> {
-    let body = reqwest::get("http://ollama.local/api/tags")
+    let client = reqwest::Client::new();
+    let body = client
+        .get("http://ollama.local/api/tags")
+        .send()
         .await?
         .text()
         .await?;
