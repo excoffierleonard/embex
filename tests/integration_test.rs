@@ -1,4 +1,4 @@
-use embex::App;
+use embex::{App, Config};
 use std::io::Write;
 use tempfile::NamedTempFile;
 
@@ -8,7 +8,8 @@ async fn test_full_image_processing_flow() {
     let mut temp_file = NamedTempFile::new().unwrap();
     temp_file.write_all(b"test image content").unwrap();
 
-    let app = App::new();
+    let config = Config::default();
+    let app = App::new(config);
     let result = app.process_image(temp_file.path().to_str().unwrap()).await;
 
     // This test will fail in CI without a mock server
