@@ -1,4 +1,4 @@
-use crate::{AppError, ImageProcessor, VisionApiClient};
+use crate::{AppError, Config, ImageProcessor, VisionApiClient};
 
 #[derive(Default)]
 pub struct App {
@@ -6,8 +6,10 @@ pub struct App {
 }
 
 impl App {
-    pub fn new() -> Self {
-        Self::default()
+    pub fn new(config: Config) -> Self {
+        Self {
+            api_client: VisionApiClient::new(config),
+        }
     }
 
     pub async fn process_image(&self, image_path: &str) -> Result<String, AppError> {
