@@ -1,18 +1,19 @@
 use embex::{App, Config};
-use std::io::Write;
-use tempfile::NamedTempFile;
 
 #[tokio::test]
 async fn test_full_image_processing_flow() {
-    // Create a test image
-    let mut temp_file = NamedTempFile::new().unwrap();
-    temp_file.write_all(b"test image content").unwrap();
+    // Source test image
+    let test_image_path = concat!(env!("CARGO_MANIFEST_DIR"), "/tests/resources/test_image.png");
 
-    let config = Config::default();
+    let config = Config::build().expect("Failed to load configuration");
     let app = App::new(config);
-    let result = app.process_image(temp_file.path().to_str().unwrap()).await;
+    let result = app.process_image(test_image_path).await;
+
+    match &result {
+        Ok(_) => println!("Processing succeeded"),
+        Err(e) => println!("Processing failed with error: {:?}", e),
+    }
 
     // This test will fail in CI without a mock server
-    // Need to set up a mock server here
-    assert!(result.is_err());
+    assert!(result.is_ok());
 }
