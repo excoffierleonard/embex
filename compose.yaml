@@ -1,7 +1,15 @@
 services:
-  embex:
+  app:
     build:
       context: .
       dockerfile: dockerfile
     image: ghcr.io/excoffierleonard/embex
-    container_name: embex
+    container_name: embex-app
+  
+  db:
+    image: postgres
+    container_name: embex-db
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - 5432:5432
