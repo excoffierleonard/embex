@@ -74,4 +74,34 @@ mod tests {
 
         mock.assert();
     }
+
+    #[tokio::test]
+    async fn test_analyze_image_error() {
+        let mut server = Server::new_async().await;
+
+        let url = server.url();
+        let mock = server.mock("POST", "/")
+            .with_status(400)
+            .with_header("content-type", "application/json")
+            .with_body(r#"{"error": "invalid request"}"#)
+            .create();
+
+        let config = Config {
+            api_url: url,
+            model_name: "test_model".to_string(),
+            prompt: "test_prompt".to_string(),
+        };
+
+        let client = VisionApiClient::new(config);
+        let result = client.analyze_image("test_image_base64".to_string()).await;
+
+        assert!(result.is_err());
+        if let Err(AppError::Api(error_message)) = result {
+            assert_eq!(error_message, "invalid request");
+        } else {
+            panic!("Expected AppError::Api");
+        }
+
+        mock.assert();
+    }
 }
