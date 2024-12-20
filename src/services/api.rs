@@ -34,3 +34,45 @@ impl VisionApiClient {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use mockito::Server; // Changed from mockito::mock
+
+    #[tokio::test]
+    async fn test_analyze_image_success() {
+        let mut server = Server::new(); // Create new server
+        let mock = server
+            .mock("POST", "/api/generate")
+            .with_status(200)
+            .with_header("content-type", "application/json")
+            .with_body(r#"{"response":"A beautiful landscape"}"#)
+            .create();
+
+        let client = VisionApiClient::new();
+        let result = client.analyze_image("base64_string".to_string()).await;
+
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap(), "A beautiful landscape");
+        mock.assert();
+    }
+
+    #[tokio::test]
+    async fn test_analyze_image_error() {
+        let mut server = Server::new();
+        let mock = server
+            .mock("POST", "/api/generate")
+            .with_status(400)
+            .with_header("content-type", "application/json")
+            .with_body(r#"{"error":"Invalid image format"}"#)
+            .create();
+
+        let client = VisionApiClient::new();
+        let result = client.analyze_image("invalid_base64".to_string()).await;
+
+        assert!(result.is_err());
+        assert!(matches!(result.unwrap_err(), AppError::Api(_)));
+        mock.assert();
+    }
+}
