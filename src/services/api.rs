@@ -43,3 +43,35 @@ impl VisionApiClient {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use mockito::Server;
+
+    #[tokio::test]
+    async fn test_analyze_image_success() {
+        let mut server = Server::new_async().await;
+
+        let url = server.url();
+        let mock = server.mock("POST", "/")
+            .with_status(200)
+            .with_header("content-type", "application/json")
+            .with_body(r#"{"response": "analysis result"}"#)
+            .create();
+
+        let config = Config {
+            api_url: url,
+            model_name: "test_model".to_string(),
+            prompt: "test_prompt".to_string(),
+        };
+
+        let client = VisionApiClient::new(config);
+        let result = client.analyze_image("test_image_base64".to_string()).await;
+
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap(), "analysis result");
+
+        mock.assert();
+    }
+}
