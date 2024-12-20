@@ -53,7 +53,6 @@ mod tests {
     async fn test_analyze_image_success() {
         let mut server = Server::new_async().await;
 
-        let url = server.url();
         let mock = server
             .mock("POST", "/")
             .with_status(200)
@@ -62,7 +61,7 @@ mod tests {
             .create();
 
         let config = Config {
-            api_url: url,
+            api_url: server.url(),
             model_name: "test_model".to_string(),
             prompt: "test_prompt".to_string(),
         };
@@ -72,7 +71,6 @@ mod tests {
 
         assert!(result.is_ok());
         assert_eq!(result.unwrap(), "analysis result");
-
         mock.assert();
     }
 
@@ -80,7 +78,6 @@ mod tests {
     async fn test_analyze_image_api_error() {
         let mut server = Server::new_async().await;
 
-        let url = server.url();
         let mock = server
             .mock("POST", "/")
             .with_status(400)
@@ -89,7 +86,7 @@ mod tests {
             .create();
 
         let config = Config {
-            api_url: url,
+            api_url: server.url(),
             model_name: "test_model".to_string(),
             prompt: "test_prompt".to_string(),
         };
@@ -98,12 +95,7 @@ mod tests {
         let result = client.analyze_image("test_image_base64".to_string()).await;
 
         assert!(result.is_err());
-        if let Err(AppError::Api(error_message)) = result {
-            assert_eq!(error_message, "invalid request");
-        } else {
-            panic!("Expected AppError::Api");
-        }
-
+        assert!(matches!(result, Err(AppError::Api(msg)) if msg == "invalid request"));
         mock.assert();
     }
 
