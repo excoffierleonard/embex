@@ -1,21 +1,4 @@
-use embex::{AppError, ImageProcessor, VisionApiClient};
-
-struct App {
-    api_client: VisionApiClient,
-}
-
-impl App {
-    fn new() -> Self {
-        Self {
-            api_client: VisionApiClient::new(),
-        }
-    }
-
-    async fn process_image(&self, image_path: &str) -> Result<String, AppError> {
-        let base64_image = ImageProcessor::to_base64(image_path)?;
-        self.api_client.analyze_image(base64_image).await
-    }
-}
+use embex::App;
 
 #[tokio::main]
 async fn main() {
