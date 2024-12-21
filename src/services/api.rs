@@ -21,15 +21,15 @@ impl VisionApiClient {
 
     pub async fn analyze_image(&self, image_base64: String) -> Result<String, AppError> {
         let request = ApiRequest {
-            model: self.config.model_name.clone(),
-            prompt: self.config.prompt.clone(),
+            model: self.config.completion_model.clone(),
+            prompt: self.config.completion_prompt.clone(),
             stream: false,
             images: vec![image_base64],
         };
 
         let response = self
             .client
-            .post(&self.config.api_url)
+            .post(&self.config.completion_endpoint)
             .json(&request)
             .send()
             .await?;
@@ -61,9 +61,11 @@ mod tests {
             .create();
 
         let config = Config {
-            api_url: server.url(),
-            model_name: "test_model".to_string(),
-            prompt: "test_prompt".to_string(),
+            completion_endpoint: server.url(),
+            completion_model: "test_completion_model".to_string(),
+            completion_prompt: "test_completion_prompt".to_string(),
+            embedding_endpoint: "test_embedding_endpoint".to_string(),
+            embedding_model: "test_embedding_model".to_string(),
         };
 
         let client = VisionApiClient::new(config);
@@ -86,9 +88,11 @@ mod tests {
             .create();
 
         let config = Config {
-            api_url: server.url(),
-            model_name: "test_model".to_string(),
-            prompt: "test_prompt".to_string(),
+            completion_endpoint: server.url(),
+            completion_model: "test_completion_model".to_string(),
+            completion_prompt: "test_completion_prompt".to_string(),
+            embedding_endpoint: "test_embedding_endpoint".to_string(),
+            embedding_model: "test_embedding_model".to_string(),
         };
 
         let client = VisionApiClient::new(config);
@@ -102,9 +106,11 @@ mod tests {
     #[tokio::test]
     async fn test_analyze_image_request_error() {
         let config = Config {
-            api_url: "http://invalid_url".to_string(),
-            model_name: "test_model".to_string(),
-            prompt: "test_prompt".to_string(),
+            completion_endpoint: "http://invalidurl".to_string(),
+            completion_model: "test_completion_model".to_string(),
+            completion_prompt: "test_completion_prompt".to_string(),
+            embedding_endpoint: "test_embedding_endpoint".to_string(),
+            embedding_model: "test_embedding_model".to_string(),
         };
 
         let client = VisionApiClient::new(config);
