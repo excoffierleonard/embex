@@ -6,7 +6,7 @@ async fn main() {
     let app = App::new(config);
 
     match app.process_image("image.png").await {
-        Ok(response) => println!("Analysis result: {response}"),
+        Ok(response) => println!("Analysis result: {:?}", response),
         Err(e) => eprintln!("Error: {e}"),
     }
 }

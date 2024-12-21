@@ -12,8 +12,13 @@ impl App {
         }
     }
 
-    pub async fn process_image(&self, image_path: &str) -> Result<String, AppError> {
+    pub async fn process_image(&self, image_path: &str) -> Result<Vec<Vec<f32>>, AppError> {
         let base64_image = ImageProcessor::to_base64(image_path)?;
-        self.api_client.analyze_image(base64_image).await
+        let description = self.api_client.analyze_image(base64_image).await?;
+        let embedding = self
+            .api_client
+            .embed_description(description.clone())
+            .await?;
+        Ok(embedding)
     }
 }
