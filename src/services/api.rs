@@ -1,7 +1,10 @@
 use crate::{
     config::Config,
     error::AppError,
-    types::{ApiErrorResponse, ApiRequest, ApiResponse},
+    types::{
+        ApiErrorResponse, CompletionApiRequest, CompletionApiResponse, EmbeddingApiRequest,
+        EmbeddingApiResponse,
+    },
 };
 use reqwest::Client;
 
@@ -20,7 +23,7 @@ impl VisionApiClient {
     }
 
     pub async fn analyze_image(&self, image_base64: String) -> Result<String, AppError> {
-        let request = ApiRequest {
+        let request = CompletionApiRequest {
             model: self.config.completion_model.clone(),
             prompt: self.config.completion_prompt.clone(),
             stream: false,
@@ -35,8 +38,30 @@ impl VisionApiClient {
             .await?;
 
         if response.status().is_success() {
-            let success: ApiResponse = response.json().await?;
+            let success: CompletionApiResponse = response.json().await?;
             Ok(success.response)
+        } else {
+            let error: ApiErrorResponse = response.json().await?;
+            Err(AppError::Api(error.error))
+        }
+    }
+
+    pub async fn embed_description(&self, description: String) -> Result<Vec<Vec<f32>>, AppError> {
+        let request = EmbeddingApiRequest {
+            model: self.config.completion_model.clone(),
+            input: vec![description],
+        };
+
+        let response = self
+            .client
+            .post(&self.config.embedding_endpoint)
+            .json(&request)
+            .send()
+            .await?;
+
+        if response.status().is_success() {
+            let success: EmbeddingApiResponse = response.json().await?;
+            Ok(success.embeddings)
         } else {
             let error: ApiErrorResponse = response.json().await?;
             Err(AppError::Api(error.error))
