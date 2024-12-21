@@ -102,6 +102,38 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn test_embed_description_success() {
+        let mut server = Server::new_async().await;
+
+        let mock = server
+            .mock("POST", "/")
+            .with_status(200)
+            .with_header("content-type", "application/json")
+            .with_body(r#"{"embeddings": [[-0.0054740426,0.016664743,-0.18402556]]}"#)
+            .create();
+
+        let config = Config {
+            completion_endpoint: "test_completion_endpoint".to_string(),
+            completion_model: "test_completion_model".to_string(),
+            completion_prompt: "test_completion_prompt".to_string(),
+            embedding_endpoint: server.url(),
+            embedding_model: "test_embedding_model".to_string(),
+        };
+
+        let client = VisionApiClient::new(config);
+        let result = client
+            .embed_description("test_description".to_string())
+            .await;
+
+        assert!(result.is_ok());
+        assert_eq!(
+            result.unwrap(),
+            vec![vec![-0.0054740426, 0.016664743, -0.18402556]]
+        );
+        mock.assert();
+    }
+
+    #[tokio::test]
     async fn test_analyze_image_api_error() {
         let mut server = Server::new_async().await;
 
