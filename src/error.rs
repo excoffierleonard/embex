@@ -10,4 +10,6 @@ pub enum AppError {
     File(#[from] std::io::Error),
     #[error("Base64 encoding error: {0}")]
     Encoding(#[from] base64::DecodeError),
+    #[error("Database error: {0}")]
+    Database(String),
 }

@@ -5,6 +5,8 @@ services:
       dockerfile: dockerfile
     image: ghcr.io/excoffierleonard/embex
     container_name: embex-app
+    networks:
+      - embex
   
   db:
     image: ankane/pgvector # Need to implement more secure option later
@@ -13,3 +15,9 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - 5432:5432
+    networks:
+      - embex
+
+networks:
+  embex:
+    name: embex

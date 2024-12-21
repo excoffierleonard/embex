@@ -8,6 +8,7 @@ pub struct Config {
     pub completion_prompt: String,
     pub embedding_endpoint: String,
     pub embedding_model: String,
+    pub database_url: String,
 }
 
 impl Config {
@@ -42,6 +43,7 @@ impl Config {
         ";
         const DEFAULT_EMBEDDING_ENDPOINT: &str = "http://ollama.local/api/embed";
         const DEFAULT_EMBEDDING_MODEL: &str = "nomic-embed-text";
+        const DEFAULT_DATABASE_URL: &str = "postgres://postgres:test@127.0.0.1:5432/postgres";
 
         dotenv().ok();
         let completion_endpoint = env::var("COMPLETION_ENDPOINT")
@@ -54,6 +56,8 @@ impl Config {
             .unwrap_or_else(|_| DEFAULT_EMBEDDING_ENDPOINT.to_string());
         let embedding_model =
             env::var("EMBEDDING_MODEL").unwrap_or_else(|_| DEFAULT_EMBEDDING_MODEL.to_string());
+        let database_url =
+            env::var("DATABASE_URL").unwrap_or_else(|_| DEFAULT_DATABASE_URL.to_string());
 
         Ok(Self {
             completion_endpoint,
@@ -61,6 +65,7 @@ impl Config {
             completion_prompt,
             embedding_endpoint,
             embedding_model,
+            database_url,
         })
     }
 }

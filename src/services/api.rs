@@ -48,7 +48,7 @@ impl VisionApiClient {
 
     pub async fn embed_description(&self, description: String) -> Result<Vec<Vec<f32>>, AppError> {
         let request = EmbeddingApiRequest {
-            model: self.config.completion_model.clone(),
+            model: self.config.embedding_model.clone(),
             input: vec![description],
         };
 
@@ -91,6 +91,7 @@ mod tests {
             completion_prompt: "test_completion_prompt".to_string(),
             embedding_endpoint: "test_embedding_endpoint".to_string(),
             embedding_model: "test_embedding_model".to_string(),
+            database_url: "test_db_url".to_string(),
         };
 
         let client = VisionApiClient::new(config);
@@ -118,6 +119,7 @@ mod tests {
             completion_prompt: "test_completion_prompt".to_string(),
             embedding_endpoint: server.url(),
             embedding_model: "test_embedding_model".to_string(),
+            database_url: "test_db_url".to_string(),
         };
 
         let client = VisionApiClient::new(config);
@@ -150,6 +152,7 @@ mod tests {
             completion_prompt: "test_completion_prompt".to_string(),
             embedding_endpoint: "test_embedding_endpoint".to_string(),
             embedding_model: "test_embedding_model".to_string(),
+            database_url: "test_db_url".to_string(),
         };
 
         let client = VisionApiClient::new(config);
@@ -168,6 +171,7 @@ mod tests {
             completion_prompt: "test_completion_prompt".to_string(),
             embedding_endpoint: "test_embedding_endpoint".to_string(),
             embedding_model: "test_embedding_model".to_string(),
+            database_url: "test_db_url".to_string(),
         };
 
         let client = VisionApiClient::new(config);

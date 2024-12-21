@@ -9,7 +9,7 @@ async fn test_full_image_processing_flow() {
     );
 
     let config = Config::build().expect("Failed to load configuration");
-    let app = App::new(config);
+    let app = App::new(config).await.expect("Failed to initialize app");
     let result = app.process_image(test_image_path).await;
 
     // This test will fail in CI without a mock server
