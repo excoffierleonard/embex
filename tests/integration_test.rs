@@ -18,9 +18,12 @@ async fn test_full_image_processing_flow() {
 
 #[tokio::test]
 async fn test_full_image_retreival_flow() {
+    // Lookup Prompt
+    let prompt = "Green Forest";
+
     let config = Config::build().expect("Failed to load configuration");
     let app = App::new(config).await.expect("Failed to initialize app");
-    let result = app.find_images("A beautifull forest").await;
+    let result = app.find_images(prompt).await;
 
     // This test will fail in CI without a mock server
     assert!(result.is_ok());

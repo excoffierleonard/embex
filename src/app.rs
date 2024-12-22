@@ -44,8 +44,9 @@ impl App {
             .fetch_similar_images(embedding.into_iter().flatten().collect())
             .await?;
 
-        for base64_image in base64_images {
-            ImageProcessor::to_file(&base64_image)?;
+        for (i, base64_image) in base64_images.iter().enumerate() {
+            let file_name = format!("output_{}.png", i + 1);
+            ImageProcessor::to_file(&base64_image, &file_name)?;
         }
 
         Ok(())
