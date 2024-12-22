@@ -16,9 +16,9 @@ impl App {
         })
     }
 
-    pub async fn process_image(&self, image_path: Vec<&str>) -> Result<(), AppError> {
+    pub async fn process_image(&self, image_paths: Vec<&str>) -> Result<(), AppError> {
         // Need more efficient implementation of this loop maybe with iterators on all level since some apis can take vectors of strings
-        for path in image_path {
+        for path in image_paths {
             let base64_image = ImageProcessor::to_base64(path)?;
             let description = self.api_client.analyze_image(base64_image.clone()).await?;
             let embedding = self
