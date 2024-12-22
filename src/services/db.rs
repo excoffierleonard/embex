@@ -13,7 +13,7 @@ impl DbClient {
 
         Ok(Self { pool })
     }
-
+    // TODO: Need to also input the title of the image and its metadata to ensure no duplicates for a well defined db
     pub async fn store_image_result(
         &self,
         b64: String,
@@ -36,6 +36,8 @@ impl DbClient {
         Ok(())
     }
 
+    // TODO: Need to make the LIMIT a variable that can be set by the user
+    // TODO: Need to define unit tests for all program
     pub async fn fetch_similar_images(&self, embedding: Vec<f32>) -> Result<Vec<String>, AppError> {
         let result = sqlx::query(
             "
