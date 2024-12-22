@@ -20,7 +20,7 @@ impl DbClient {
         description: String,
         embedding: Vec<f32>,
     ) -> Result<(), AppError> {
-        sqlx::query("INSERT INTO images (b64, description, embedding) VALUES ($1, $2, $3)")
+        sqlx::query("INSERT INTO images (data, description, embedding) VALUES (decode($1, 'base64'), $2, $3)")
             .bind(b64)
             .bind(description)
             .bind(&embedding[..])
