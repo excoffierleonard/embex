@@ -8,6 +8,7 @@ pub struct App {
 impl App {
     pub async fn new(config: Config) -> Result<Self, AppError> {
         let db_client = DbClient::new(&config.database_url).await?;
+        db_client.initialize().await?;
         let api_client = VisionApiClient::new(config);
 
         Ok(Self {

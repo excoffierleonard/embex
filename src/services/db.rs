@@ -13,6 +13,36 @@ impl DbClient {
 
         Ok(Self { pool })
     }
+
+    pub async fn initialize(&self) -> Result<(), AppError> {
+        sqlx::query(
+            "
+            CREATE EXTENSION IF NOT EXISTS vector;
+            ",
+        )
+        .execute(&self.pool)
+        .await
+        .map_err(|e| AppError::Database(e.to_string()))?;
+
+        sqlx::query(
+            "
+            CREATE TABLE IF NOT EXISTS images (
+                id UUID DEFAULT gen_random_uuid(),
+                data BYTEA NOT NULL,
+                description TEXT,
+                embedding vector(768),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                PRIMARY KEY (id)
+            );
+            ",
+        )
+        .execute(&self.pool)
+        .await
+        .map_err(|e| AppError::Database(e.to_string()))?;
+
+        Ok(())
+    }
+
     // TODO: Need to also input the title of the image and its metadata to ensure no duplicates for a well defined db
     pub async fn store_image_result(
         &self,
