@@ -32,4 +32,20 @@ impl App {
             .await?;
         Ok(())
     }
+
+    pub async fn find_images(&self, prompt: &str) -> Result<(), AppError> {
+        let embedding = self
+            .api_client
+            .embed_description(prompt.to_string())
+            .await?;
+
+        let base64_images = self
+            .db_client
+            .fetch_similar_images(embedding.into_iter().flatten().collect())
+            .await?;
+
+        ImageProcessor::to_file(base64_images)?;
+
+        Ok(())
+    }
 }

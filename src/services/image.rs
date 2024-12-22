@@ -9,6 +9,12 @@ impl ImageProcessor {
         let bytes = fs::read(path)?;
         Ok(STANDARD.encode(bytes))
     }
+
+    pub fn to_file(b64: &str) -> Result<(), AppError> {
+        let bytes = STANDARD.decode(b64)?;
+        fs::write("output.png", bytes)?;
+        Ok(())
+    }
 }
 
 #[cfg(test)]
