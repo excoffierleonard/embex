@@ -7,8 +7,8 @@ async fn main() {
 
     match app
         .process_image(vec![
-            "tests/resources/test_image_1",
-            "tests/resources/test_image_2",
+            "tests/resources/test_image_1.png",
+            "tests/resources/test_image_2.png",
         ])
         .await
     {
