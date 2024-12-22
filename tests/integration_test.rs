@@ -26,7 +26,7 @@ async fn test_full_image_processing_flow() {
 #[tokio::test]
 async fn test_full_image_retreival_flow() {
     // Lookup Prompt
-    let prompt = "Green Forest";
+    let prompt = "An Otter";
 
     let config = Config::build().expect("Failed to load configuration");
     let app = App::new(config).await.expect("Failed to initialize app");
