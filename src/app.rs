@@ -44,7 +44,9 @@ impl App {
             .fetch_similar_images(embedding.into_iter().flatten().collect())
             .await?;
 
-        ImageProcessor::to_file(base64_images)?;
+        for base64_image in base64_images {
+            ImageProcessor::to_file(&base64_image)?;
+        }
 
         Ok(())
     }

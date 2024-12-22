@@ -5,16 +5,6 @@ pub struct DbClient {
     pool: Pool<Postgres>,
 }
 
-#[derive(Debug)]
-pub struct QueryResult {
-    pub rows: Vec<TableRow>,
-}
-
-#[derive(Debug)]
-pub struct TableRow {
-    pub b64: String,
-}
-
 impl DbClient {
     pub async fn new(database_url: &str) -> Result<Self, AppError> {
         let pool = PgPool::connect(database_url)
@@ -46,7 +36,7 @@ impl DbClient {
         Ok(())
     }
 
-    pub async fn fetch_similar_images(&self, embedding: Vec<f32>) -> Result<QueryResult, AppError> {
+    pub async fn fetch_similar_images(&self, embedding: Vec<f32>) -> Result<Vec<String>, AppError> {
         let result = sqlx::query(
             "
             SELECT encode(data, 'base64') as data
@@ -62,13 +52,14 @@ impl DbClient {
         .await
         .map_err(|e| AppError::Database(e.to_string()))?;
 
-        let rows = result
+        let images = result
             .iter()
-            .map(|row| TableRow {
-                b64: row.get("data"),
+            .map(|row| {
+                let data: String = row.get("data");
+                data.trim().replace("\n", "").replace("\r", "")
             })
             .collect();
 
-        Ok(QueryResult { rows })
+        Ok(images)
     }
 }
