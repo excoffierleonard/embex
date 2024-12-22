@@ -50,7 +50,7 @@ impl App {
 
         for (i, base64_image) in base64_images.iter().enumerate() {
             let file_name = format!("tests/output/output_{}.png", i + 1);
-            ImageProcessor::to_file(&base64_image, &file_name)?;
+            ImageProcessor::to_file(base64_image, &file_name)?;
         }
 
         Ok(())
